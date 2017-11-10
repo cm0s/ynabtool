@@ -1,11 +1,18 @@
 {
-  "name": "ynab-bank-statement-converter",
+  "name": "ynabtool",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "ynabtool": "index.js"
+  },
   "author": "Nicolas Forney",
-  "license": "GPL-2.0"
+  "license": "GPL-2.0",
+  "dependencies": {
+    "commander": "^2.11.0",
+    "xlsx": "^0.11.8"
+  }
 }

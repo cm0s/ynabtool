@@ -2,9 +2,9 @@ Convert banks statements files into YNAB compatible files
 
 !NOT YET READY IN EARLY DEVELOPMENT!
 
-#Usage
+# Usage
 
-##Installation
+## Installation
 ```bash
 $ npm install -g ynabtool
 ```
