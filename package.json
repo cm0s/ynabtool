@@ -1,6 +1,6 @@
 {
   "name": "ynabtool",
-  "version": "1.0.0",
+  "version": "1.0.0-SNAPSHOT",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   "license": "GPL-2.0",
   "dependencies": {
     "commander": "^2.11.0",
+    "exceljs": "^0.7.0",
     "xlsx": "^0.11.8"
   }
 }
