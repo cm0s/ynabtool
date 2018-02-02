@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-var Excel = require('exceljs');
-
+const Excel = require('exceljs');
 const program = require('commander');
-var filenameValue;
+const fs = require('fs');
+
+let filenameValue;
 
 program
     .version('1.0.0')
@@ -22,12 +23,17 @@ program.parse(process.argv);
 
 console.log("filename:" + filenameValue);
 
-var workbook = new Excel.Workbook();
-var CSVoptions = {
+let workbook = new Excel.Workbook();
+let CSVoptions = {
     delimiter: ';',
     dateFormats: ['YYYY-MM-DD']
 }
-workbook.csv.readFile(filenameValue, CSVoptions)
+
+let data = fs.readFileSync(filenameValue, {encoding: 'latin1'}).toString();
+let filenameLatin = filenameValue.replace('.csv', 'Latin1.csv');
+fs.writeFileSync(filenameLatin, data);
+
+workbook.csv.readFile(filenameLatin, CSVoptions)
     .then(function (worksheet) {
         worksheet.getColumn(4).eachCell(function (cell) {
             if (Number.isFinite(cell.value)) {
@@ -42,25 +48,26 @@ workbook.csv.readFile(filenameValue, CSVoptions)
         worksheet.spliceColumns(1, 1);
 
 
-        var nbRows = worksheet.lastRow.number;
+        let nbRows = worksheet.lastRow.number;
 
-        worksheet.spliceRows(0, 4);
+        worksheet.spliceRows(0, 6);
 
-        worksheet.getRow(nbRows - 4).destroy();
-        worksheet.getRow(nbRows - 5).destroy();
+        worksheet.getRow(nbRows - 6).destroy();
+        worksheet.getRow(nbRows - 7).destroy();
 
-        var firstRow = worksheet.getRow(1);
+        let firstRow = worksheet.getRow(1);
         firstRow.getCell('A').value = 'Memo';
         firstRow.getCell('B').value = 'Inflow';
         firstRow.getCell('C').value = 'Outflow';
         firstRow.getCell('D').value = 'Date';
 
-        var options = {
+        let options = {
             dateFormat: 'YYYY-MM-DD'
         };
         workbook.csv.writeFile('test2.csv', options)
             .then(function () {
-                // done
+                //Delete temporary file
+                fs.unlinkSync(filenameLatin);
             });
     });
 

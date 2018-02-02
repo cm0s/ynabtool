@@ -10,10 +10,11 @@
     "ynabtool": "index.js"
   },
   "author": "Nicolas Forney",
-  "license": "GPL-2.0",
+  "license": "GPL-3.0",
   "dependencies": {
     "commander": "^2.11.0",
     "exceljs": "^0.7.0",
+    "iconv": "^2.3.0",
     "xlsx": "^0.11.8"
   }
 }
