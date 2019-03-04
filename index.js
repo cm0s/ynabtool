@@ -102,18 +102,18 @@ function readPostCsvFile(filename) {
         result = removeComma(result);
         fs.writeFile(filename, result, 'latin1', function (err) {
             if (err) return console.log(err);
-            createResultFile();
+            createResultFile(filename);
         });
     });
 }
 
-function createResultFile() {
+function createResultFile(filename) {
     let workbook = new Excel.Workbook();
     let CSVoptions = {
         delimiter: ';'
     }
 
-    let data = fs.readFileSync(filename, {encoding: 'latin1'}).toString();
+    let data = fs.readFileSync(filename, {encoding: 'utf-8'}).toString();
     let filenameLatin = filename.replace('.csv', 'Latin1.csv');
     fs.writeFileSync(filenameLatin, data);
 
