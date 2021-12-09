@@ -65,7 +65,7 @@ function createTransferwiseCsv(transactions, outputFilename) {
             type
         } = transaction;
 
-        description = removeComma(description)+' (fees: '+fees+')';
+        description = removeComma(description) + ' (fees: ' + fees + ')';
 
         date = moment(date).format('YYYY-MM-DD')
         let inflow = '', outflow = '';
