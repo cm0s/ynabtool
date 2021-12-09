@@ -81,9 +81,16 @@ function createTransferwiseCsv(transactions, outputFilename) {
     });
 }
 
-function getTransactions(config) {
-    let url = 'https://api.transferwise.com/v1/borderless-accounts/' + config.accountId + '/statement.json?currency=' + config.currency + '&intervalStart=2019-01-01T00:00:00.000Z&intervalEnd=2019-02-15T23:59:59.999Z';
-    return axios.get(url, {headers: {Authorization: 'Bearer ' + config.token}})
+function getTransactions(config, startDate, endDate) {
+    let url = 'https://api.transferwise.com/v3/profiles/' + config.profileId + '/borderless-accounts/' + config.accountId + '/statement.json?currency=' + config.currency + '&intervalStart=' + startDate + 'T00:00:00.000Z&intervalEnd=' + endDate + 'T23:59:59.999Z';
+    console.log("URL:" + url);
+    return axios.get(url, {
+        headers: {
+            Authorization: 'Bearer ' + config.token,
+            'X-signature': config.xSignature,
+            'x-2fa-approval': config.x2faApproval
+        }
+    })
 }
 
 function readTransferwiseConfig() {
