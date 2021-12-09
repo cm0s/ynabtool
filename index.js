@@ -19,22 +19,22 @@ program
     });
 
 program
-    .command('transferwise')
+    .command('transferwise <startDate> <endDate>')
     .alias('t')
-    .description('import Transferwise statements')
-    .action((env) => {
-        generateTransferwiseCsv()
+    .description('import Transferwise statements (date format: YYYY-MM-DD)')
+    .action((startDate, endDate) => {
+        generateTransferwiseCsv(startDate, endDate)
     })
 
 
 program.parse(process.argv);
 
 
-function generateTransferwiseCsv() {
+function generateTransferwiseCsv(startDate, endDate) {
     const transferwiseConfigs = JSON.parse(readTransferwiseConfig());
 
     for (const config of transferwiseConfigs) {
-        getTransactions(config).then(response => {
+        getTransactions(config, startDate, endDate).then(response => {
             let {
                 transactions,
                 accountHolder: {
