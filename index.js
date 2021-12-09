@@ -164,7 +164,7 @@ function createResultFile(filename) {
             });
 
 
-            const resultFile = 'result.csv';
+            const resultFile = 'post-ynab-importable.csv';
             workbook.csv.writeFile(resultFile)
                 .then(function () {
                     console.log('Converted file : ' + resultFile);
