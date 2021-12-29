@@ -1,3 +1,4 @@
 .idea
 node_modules
-transferwise.config.json
+wise.config.json
+*.csv

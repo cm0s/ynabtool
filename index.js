@@ -19,21 +19,21 @@ program
     });
 
 program
-    .command('transferwise <startDate> <endDate>')
+    .command('wise <startDate> <endDate>')
     .alias('t')
-    .description('import Transferwise statements (date format: YYYY-MM-DD)')
+    .description('import Wise statements (date format: YYYY-MM-DD)')
     .action((startDate, endDate) => {
-        generateTransferwiseCsv(startDate, endDate)
+        generateWiseCsv(startDate, endDate)
     })
 
 
 program.parse(process.argv);
 
 
-function generateTransferwiseCsv(startDate, endDate) {
-    const transferwiseConfigs = JSON.parse(readTransferwiseConfig());
+function generateWiseCsv(startDate, endDate) {
+    const wiseConfigs = JSON.parse(readWiseConfig());
 
-    for (const config of transferwiseConfigs) {
+    for (const config of wiseConfigs) {
         getTransactions(config, startDate, endDate).then(response => {
             let {
                 transactions,
@@ -43,14 +43,14 @@ function generateTransferwiseCsv(startDate, endDate) {
                 }
             } = response.data;
 
-            const filename = ('transferwise-' + firstName + '-' + lastName + '.csv').toLowerCase();
-            createTransferwiseCsv(transactions, filename)
+            const filename = ('wise-' + firstName + '-' + lastName + '.csv').toLowerCase();
+            createWiseCsv(transactions, filename)
         });
     }
 
 }
 
-function createTransferwiseCsv(transactions, outputFilename) {
+function createWiseCsv(transactions, outputFilename) {
     let fileContent = 'Memo,Inflow,Outflow,Date\n';
     for (const transaction of transactions) {
         let {
@@ -93,8 +93,8 @@ function getTransactions(config, startDate, endDate) {
     })
 }
 
-function readTransferwiseConfig() {
-    return fs.readFileSync('transferwise.config.json', 'utf8');
+function readWiseConfig() {
+    return fs.readFileSync('wise.config.json', 'utf8');
 }
 
 function readPostCsvFile(filename) {
