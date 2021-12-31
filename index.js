@@ -5,6 +5,7 @@ const program = require('commander');
 const fs = require('fs');
 const moment = require('moment');
 const axios = require('axios');
+const crypto = require('crypto');
 
 program
     .version('1.0.0')
@@ -34,7 +35,7 @@ function generateWiseCsv(startDate, endDate) {
     const wiseConfigs = JSON.parse(readWiseConfig());
 
     for (const config of wiseConfigs) {
-        getTransactions(config, startDate, endDate).then(response => {
+        getTransactions(config, startDate, endDate).then((response) => {
             let {
                 transactions,
                 accountHolder: {
@@ -77,18 +78,44 @@ function createWiseCsv(transactions, outputFilename) {
         fileContent += description + ',' + inflow + ',' + outflow + ',' + date + '\n';
     }
     fs.writeFile(outputFilename, fileContent, function (err) {
-        if (err) throw err;
+        if (err) {
+            throw err
+        } else {
+            console.log('New file created : ' + outputFilename);
+        }
     });
 }
 
-function getTransactions(config, startDate, endDate) {
+function getTransactions(config, startDate, endDate, x2faApproval = null, signedX2fa = null) {
     let url = 'https://api.transferwise.com/v3/profiles/' + config.profileId + '/borderless-accounts/' + config.accountId + '/statement.json?currency=' + config.currency + '&intervalStart=' + startDate + 'T00:00:00.000Z&intervalEnd=' + endDate + 'T23:59:59.999Z';
-    console.log("URL:" + url);
-    return axios.get(url, {
-        headers: {
-            Authorization: 'Bearer ' + config.token,
-            'X-signature': config.xSignature,
-            'x-2fa-approval': config.x2faApproval
+
+    const requestHeaders = {}
+    requestHeaders.headers = {
+        Authorization: 'Bearer ' + config.token
+    }
+
+    if (signedX2fa) {
+        requestHeaders.headers['X-signature'] = signedX2fa
+    }
+
+    if (x2faApproval) {
+        requestHeaders.headers['x-2fa-approval'] = x2faApproval
+    }
+
+    return axios.get(url, requestHeaders
+    ).catch(error => {
+        let {
+            "x-2fa-approval-result": x2faApprovalResult,
+            "x-2fa-approval": x2faApproval,
+        } = error.response.headers;
+        if (x2faApprovalResult === "REJECTED") {
+            const privateKey = fs.readFileSync("/home/cm0s/.ssh/wise/private_key.pem", "utf8")
+            const sign = crypto.createSign('SHA256');
+            sign.write(x2faApproval);
+            sign.end();
+            const signedX2fa = sign.sign(privateKey, 'base64');
+
+            return getTransactions(config, startDate, endDate, x2faApproval, signedX2fa);
         }
     })
 }
