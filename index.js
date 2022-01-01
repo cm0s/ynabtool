@@ -36,16 +36,20 @@ function generateWiseCsv(startDate, endDate) {
 
     for (const config of wiseConfigs) {
         getTransactions(config, startDate, endDate).then((response) => {
-            let {
-                transactions,
-                accountHolder: {
-                    firstName,
-                    lastName
-                }
-            } = response.data;
+            if (response) {
+                let {
+                    transactions,
+                    accountHolder: {
+                        firstName,
+                        lastName
+                    }
+                } = response.data;
 
-            const filename = ('wise-' + firstName + '-' + lastName + '.csv').toLowerCase();
-            createWiseCsv(transactions, filename)
+                const filename = ('wise-' + firstName + '-' + lastName + '.csv').toLowerCase();
+                createWiseCsv(transactions, filename)
+            } else {
+                console.error("No data available for profile [" + config.profileId + "] for date range "+startDate+" to "+endDate);
+            }
         });
     }
 
