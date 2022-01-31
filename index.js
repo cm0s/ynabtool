@@ -27,6 +27,15 @@ program
         generateWiseCsv(startDate, endDate)
     })
 
+program
+    .command('wise-balance')
+    .alias('b')
+    .description('Output wise account balance')
+    .action(() => {
+        wiseBalance()
+    })
+
+
 
 program.parse(process.argv);
 
@@ -122,6 +131,39 @@ function getTransactions(config, startDate, endDate, x2faApproval = null, signed
             return getTransactions(config, startDate, endDate, x2faApproval, signedX2fa);
         }
     })
+}
+
+function getAccountBalance(config) {
+    let url = 'https://api.transferwise.com/v3/profiles/' + config.profileId + '/balances?types=STANDARD';
+
+    const requestHeaders = {}
+    requestHeaders.headers = {
+        Authorization: 'Bearer ' + config.token
+    }
+
+    return axios.get(url, requestHeaders)
+}
+
+function wiseBalance(){
+    const wiseConfigs = JSON.parse(readWiseConfig());
+
+    for (const [i, config] of wiseConfigs.entries()) {
+        getAccountBalance(config).then((response) => {
+            if (response) {
+                console.log(`Balance for ${config.name}:`)
+                console.log("------------------")
+                for(const [i, balance] of response.data.entries()) {
+                    console.log(` ${balance.currency} ${balance.amount.value} `)
+                    if(i === response.data.length -1){
+                        console.log();
+                    }
+                }
+
+            } else {
+                console.error(`No balance available for profile [${config.profileId}]`);
+            }
+        });
+    }
 }
 
 function readWiseConfig() {
