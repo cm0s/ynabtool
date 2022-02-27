@@ -122,7 +122,7 @@ function getTransactions(config, startDate, endDate, x2faApproval = null, signed
             "x-2fa-approval": x2faApproval,
         } = error.response.headers;
         if (x2faApprovalResult === "REJECTED") {
-            const privateKey = fs.readFileSync("/home/cm0s/.ssh/wise/private_key.pem", "utf8")
+            const privateKey = fs.readFileSync(config.privateKeyPath, "utf8")
             const sign = crypto.createSign('SHA256');
             sign.write(x2faApproval);
             sign.end();
@@ -172,7 +172,7 @@ function readWiseConfig() {
 
 function readPostCsvFile(filename) {
 // Remove carriage return from initial csv file
-    fs.readFile(filename, 'latin1', function (err, data) {
+    fs.readFile(filename, 'utf8', function (err, data) {
         if (err) {
             return console.log(err);
         }
@@ -180,7 +180,7 @@ function readPostCsvFile(filename) {
         let result = data.replace(/(.*)\r/gm, '$1');
         //Remove comma
         result = removeComma(result);
-        fs.writeFile(filename, result, 'latin1', function (err) {
+        fs.writeFile(filename, result, 'utf8', function (err) {
             if (err) return console.log(err);
             createResultFile(filename);
         });
@@ -221,7 +221,7 @@ function createResultFile(filename) {
             let headerRowPosition = 0;
             for (var i = 0; i < nbRows; i++) {
                 var firstCell = worksheet.getRow(i).getCell('A').value;
-                if (firstCell === 'Texte de notification') {
+                if (firstCell === 'Texte de notification' || firstCell === 'Notification text') {
                     headerRowPosition = i;
                 }
             }
