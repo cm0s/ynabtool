@@ -189,7 +189,24 @@ function readPostCsvFile(filename) {
 
 function createResultFile(filename) {
     let workbook = new Excel.Workbook();
+
     let CSVoptions = {
+        // Used to return all value as string
+        // without this option Date might not be correctly parsed depending on the System locale
+        map(value, index) {
+            switch(index) {
+                case 2 : // Credit column
+                    if(value) {
+                        return parseFloat(value)
+                    }
+                case 3 : // Debit column
+                    if(value){
+                        return parseFloat(value)
+                    }
+                default: // Everything else is parsed as String (date column included)
+                    return value;
+            }
+        },
         delimiter: ';'
     }
 
