@@ -36,7 +36,6 @@ program
     })
 
 
-
 program.parse(process.argv);
 
 
@@ -57,7 +56,7 @@ function generateWiseCsv(startDate, endDate) {
                 const filename = ('wise-' + firstName + '-' + lastName + '.csv').toLowerCase();
                 createWiseCsv(transactions, filename)
             } else {
-                console.error("No data available for profile [" + config.profileId + "] for date range "+startDate+" to "+endDate);
+                console.error("No data available for profile [" + config.profileId + "] for date range " + startDate + " to " + endDate);
             }
         });
     }
@@ -144,7 +143,7 @@ function getAccountBalance(config) {
     return axios.get(url, requestHeaders)
 }
 
-function wiseBalance(){
+function wiseBalance() {
     const wiseConfigs = JSON.parse(readWiseConfig());
 
     for (const [i, config] of wiseConfigs.entries()) {
@@ -152,9 +151,9 @@ function wiseBalance(){
             if (response) {
                 console.log(`Balance for ${config.name}:`)
                 console.log("------------------")
-                for(const [i, balance] of response.data.entries()) {
+                for (const [i, balance] of response.data.entries()) {
                     console.log(` ${balance.currency} ${balance.amount.value} `)
-                    if(i === response.data.length -1){
+                    if (i === response.data.length - 1) {
                         console.log();
                     }
                 }
@@ -194,13 +193,13 @@ function createResultFile(filename) {
         // Used to return all value as string
         // without this option Date might not be correctly parsed depending on the System locale
         map(value, index) {
-            switch(index) {
+            switch (index) {
                 case 2 : // Credit column
-                    if(value) {
+                    if (value) {
                         return parseFloat(value)
                     }
                 case 3 : // Debit column
-                    if(value){
+                    if (value) {
                         return parseFloat(value)
                     }
                 default: // Everything else is parsed as String (date column included)
