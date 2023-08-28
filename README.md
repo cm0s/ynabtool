@@ -4,7 +4,8 @@ Convert banks statements files into YNAB compatible files
 
 # Usage
 
-## Installation
+## Install locally
 ```bash
-$ npm install -g ynabtool
+$ npm pack  (will generate a ynabtool-*.tgz file)
+$ npm install -g [name of the ynabtool-*.tgz file]
 ```
