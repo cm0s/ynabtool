@@ -9,7 +9,7 @@ const crypto = require('crypto');
 
 program
     .version('1.0.0')
-    .description('YNAB tools to import bank statements');
+    .description('YNAB tools to import bank statements -');
 
 program
     .command('post <filename>')
@@ -194,11 +194,11 @@ function createResultFile(filename) {
         // without this option Date might not be correctly parsed depending on the System locale
         map(value, index) {
             switch (index) {
-                case 2 : // Credit column
+                case 3 : // Credit column
                     if (value) {
                         return parseFloat(value)
                     }
-                case 3 : // Debit column
+                case 4 : // Debit column
                     if (value) {
                         return parseFloat(value)
                     }
@@ -216,28 +216,22 @@ function createResultFile(filename) {
     workbook.csv.readFile(filenameLatin, CSVoptions)
         .then(function (worksheet) {
             // Make outflow value positive (YNAB doesn't accept negative value)
-            worksheet.getColumn(4).eachCell(function (cell) {
+            worksheet.getColumn(5).eachCell(function (cell) {
                 if (Number.isFinite(cell.value)) {
                     cell.value = Math.abs(cell.value);
                 }
             });
 
-
-            // Empty last "Solde" column (not used)
-            worksheet.getColumn(6).eachCell(function (cell) {
-                cell.value = null;
-            });
-
-            // Remove first date column (not used)
-            worksheet.spliceColumns(1, 1);
+            // Remove "Type de transaction" column (not used)
+            worksheet.spliceColumns(2, 1);
 
             const nbRows = worksheet.lastRow.number;
 
             // Retrieve header row position
             let headerRowPosition = 0;
             for (var i = 0; i < nbRows; i++) {
-                var firstCell = worksheet.getRow(i).getCell('A').value;
-                if (firstCell === 'Texte de notification' || firstCell === 'Notification text') {
+                var secondCell = worksheet.getRow(i).getCell('B').value;
+                if (secondCell === 'Texte de notification' || secondCell === 'Notification text') {
                     headerRowPosition = i;
                 }
             }
@@ -247,15 +241,15 @@ function createResultFile(filename) {
 
             // Replace first header row with the following YNAB compatible header name
             const firstRow = worksheet.getRow(1);
-            firstRow.getCell('A').value = 'Memo';
-            firstRow.getCell('B').value = 'Inflow';
-            firstRow.getCell('C').value = 'Outflow';
-            firstRow.getCell('D').value = 'Date';
+            firstRow.getCell('A').value = 'Date';
+            firstRow.getCell('B').value = 'Memo';
+            firstRow.getCell('C').value = 'Inflow';
+            firstRow.getCell('D').value = 'Outflow';
 
             worksheet.eachRow(function (row, rowNumber) {
                 if (rowNumber > 1) {
-                    let dateCell = row.getCell('D').value;
-                    row.getCell('D').value = moment(dateCell, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                    let dateCell = row.getCell('A').value;
+                    row.getCell('A').value = moment(dateCell, 'DD.MM.YYYY').format('YYYY-MM-DD');
                 }
             });
 
