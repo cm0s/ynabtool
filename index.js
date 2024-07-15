@@ -196,11 +196,11 @@ function createResultFile(filename) {
             switch (index) {
                 case 3 : // Credit column
                     if (value) {
-                        return parseFloat(value)
+                        return parseFloatWithQuoteRemoval(value)
                     }
                 case 4 : // Debit column
                     if (value) {
-                        return parseFloat(value)
+                        return parseFloatWithQuoteRemoval(value)
                     }
                 default: // Everything else is parsed as String (date column included)
                     return value;
@@ -278,4 +278,12 @@ function createResultFile(filename) {
 
 function removeComma(str) {
     return str.replace(/,\s|\s,|,/gm, ' ');
+}
+
+function removeQuote(str){
+    return str.replace(/[^0-9.-]/g, "");
+}
+
+function parseFloatWithQuoteRemoval(str){
+    return parseFloat(removeQuote(str))
 }
